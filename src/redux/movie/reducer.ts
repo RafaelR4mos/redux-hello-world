@@ -5,11 +5,12 @@ const initialState = {
 };
 
 const movieReducer = (state = initialState, action: any) => {
-    if (action.type === MovieActionTypes.GET) {
-        return { ...state, currentMovies: action.payload };
+    switch (action.type) {
+        case MovieActionTypes.GET:
+            return { ...state, currentMovies: action.payload };
+        default:
+            return state;
     }
-
-    return state;
 };
 
 export default movieReducer;

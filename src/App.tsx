@@ -1,6 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
-import axios from "axios";
 import MovieActionTypes from "./redux/movie/action-types";
 import { API_KEY, API_SITE } from "./utils/api";
 import { useEffect, useState } from "react";
@@ -42,6 +41,7 @@ function App() {
     const { currentMovies } = useSelector(
         (rootReducer) => rootReducer.movieReducer
     );
+
     const [moviesList, setMoviesList] = useState([]);
 
     const dispatch = useDispatch();
@@ -79,7 +79,7 @@ function App() {
                 <div className="card-container">
                     {currentMovies.map((movie: Result) => {
                         return (
-                            <div className="card">
+                            <div className="card" key={movie.id}>
                                 <div className="card-header">
                                     <img
                                         src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
