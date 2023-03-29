@@ -51,7 +51,7 @@
     padding: 0.8rem;
     border-radius: 8px;
     width: 370px;
-    height: 540px;
+    height: 510px;
     overflow: hidden;
     background-color: var(--gray-500);
     gap: 1rem;
@@ -109,7 +109,11 @@
 .card h2 {
     font-size: 1.2rem;
 }
+
 .favorite-icon {
-    cursor: pointer;
     margin-top: auto;
+}
+
+.favorite-icon svg {
+    cursor: pointer;
 }

@@ -131,33 +131,34 @@ function App() {
                                     <h2>{movie.title}</h2>
                                     {/* <span>{movie.release_date}</span> */}
                                     <p>{movie.overview}</p>
-                                    <Heart
-                                        data-id={movie.id}
-                                        className="favorite-icon"
-                                        size={32}
-                                        weight={
-                                            favorites.some(
-                                                (favoriteMovie: IMovie) =>
-                                                    favoriteMovie.id ===
-                                                    movie.id
-                                            )
-                                                ? "fill"
-                                                : "regular"
-                                        }
-                                        color={
-                                            favorites.some(
-                                                (favoriteMovie: IMovie) =>
-                                                    favoriteMovie.id ===
-                                                    movie.id
-                                            )
-                                                ? "red"
-                                                : "#fef7f1"
-                                        }
-                                        alt="favoritar filme"
-                                        onClick={() =>
-                                            handleFavoriteMovie(movie)
-                                        }
-                                    />
+                                    <div className="favorite-icon">
+                                        <Heart
+                                            data-id={movie.id}
+                                            size={32}
+                                            weight={
+                                                favorites.some(
+                                                    (favoriteMovie: IMovie) =>
+                                                        favoriteMovie.id ===
+                                                        movie.id
+                                                )
+                                                    ? "fill"
+                                                    : "regular"
+                                            }
+                                            color={
+                                                favorites.some(
+                                                    (favoriteMovie: IMovie) =>
+                                                        favoriteMovie.id ===
+                                                        movie.id
+                                                )
+                                                    ? "red"
+                                                    : "#fef7f1"
+                                            }
+                                            alt="favoritar filme"
+                                            onClick={() =>
+                                                handleFavoriteMovie(movie)
+                                            }
+                                        />
+                                    </div>
                                 </div>
                             );
                         })}
