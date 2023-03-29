@@ -3,6 +3,8 @@ import { API_KEY, API_SITE } from "./utils/api";
 import { useEffect, useState } from "react";
 import { Heart, X } from "@phosphor-icons/react";
 import { IMovie } from "./utils/interface";
+import { RootState } from "./redux/rootReducer";
+import { toastConfig } from "./utils/toastConfig";
 import {
     getMovieReducerSuccess,
     getMovieReducerError,
@@ -10,9 +12,9 @@ import {
     filterOnlyFavorites,
     deleteMovieFromList,
 } from "./redux/movie/slice";
-import { RootState } from "./redux/rootReducer";
 
 import "./App.css";
+import { toast } from "react-toastify";
 
 function App() {
     const dispatch = useDispatch();
@@ -24,8 +26,6 @@ function App() {
     useEffect(() => {
         getMovies();
     }, []);
-
-    console.log(favorites);
 
     const getMovies = async () => {
         try {
@@ -60,8 +60,9 @@ function App() {
             setIsFavoriteActive(true);
             dispatch(filterOnlyFavorites());
         } else {
-            alert(
-                "Por favor, adicione um filme a lista de favoritos através do ícone de favoritar"
+            toast.error(
+                "Por favor, adicione um filme a lista de favoritos através do ícone de favoritar",
+                toastConfig
             );
         }
     };
@@ -77,11 +78,10 @@ function App() {
 
     return (
         <div className="page-container">
-            <h1>Conheça Filmes populares</h1>
-            <h2>Estes estão lotando as bilheterias</h2>
-
-            {movies ? (
+            {movies.length > 0 ? (
                 <>
+                    <h1>Conheça Filmes populares</h1>
+                    <h2>Estes estão lotando as bilheterias</h2>
                     <div className="btn-filter-container">
                         <button
                             onClick={handleDisplayAllMovies}
@@ -164,7 +164,10 @@ function App() {
                     </div>
                 </>
             ) : (
-                <h2>{error}</h2>
+                <div>
+                    <h2>{error} :(</h2>
+                    <h3>Por favor, volte mais tarde</h3>
+                </div>
             )}
         </div>
     );
