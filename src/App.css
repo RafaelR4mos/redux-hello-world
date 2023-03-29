@@ -56,6 +56,9 @@
     background-color: var(--gray-500);
     gap: 1rem;
     overflow-y: visible;
+    -webkit-box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.3);
 }
 
 /* width */
