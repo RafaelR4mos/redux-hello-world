@@ -10,13 +10,14 @@ import {
     filterOnlyFavorites,
     deleteMovieFromList,
 } from "./redux/movie/slice";
+import { RootState } from "./redux/rootReducer";
 
 import "./App.css";
 
 function App() {
     const dispatch = useDispatch();
     const { movies, error, favorites } = useSelector(
-        (rootReducer) => rootReducer.movieReducer
+        (rootReducer: RootState) => rootReducer.movieReducer
     );
     const [isFavoriteActive, setIsFavoriteActive] = useState(false);
 
