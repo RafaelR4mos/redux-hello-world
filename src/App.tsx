@@ -1,59 +1,30 @@
 import { useSelector, useDispatch } from "react-redux";
-import "./App.css";
-import MovieActionTypes from "./redux/movie/action-types";
 import { API_KEY, API_SITE } from "./utils/api";
 import { useEffect, useState } from "react";
+import { Heart, X } from "@phosphor-icons/react";
+import { IMovie } from "./utils/interface";
+import {
+    getMovieReducerSuccess,
+    getMovieReducerError,
+    addMovieToFavorite,
+    filterOnlyFavorites,
+    deleteMovieFromList,
+} from "./redux/movie/slice";
 
-export interface RootObject {
-    page: number;
-    results: Result[];
-    total_pages: number;
-    total_results: number;
-}
-
-export interface Result {
-    adult: boolean;
-    backdrop_path: string;
-    genre_ids: number[];
-    id: number;
-    original_language: OriginalLanguage;
-    original_title: string;
-    overview: string;
-    popularity: number;
-    poster_path: string;
-    release_date: string;
-    title: string;
-    video: boolean;
-    vote_average: number;
-    vote_count: number;
-}
-
-export enum OriginalLanguage {
-    En = "en",
-    Es = "es",
-}
+import "./App.css";
 
 function App() {
+    const dispatch = useDispatch();
+    const { movies, error, favorites } = useSelector(
+        (rootReducer) => rootReducer.movieReducer
+    );
+    const [isFavoriteActive, setIsFavoriteActive] = useState(false);
+
     useEffect(() => {
         getMovies();
     }, []);
 
-    const { currentMovies } = useSelector(
-        (rootReducer) => rootReducer.movieReducer
-    );
-
-    const [moviesList, setMoviesList] = useState([]);
-
-    const dispatch = useDispatch();
-
-    console.log(currentMovies);
-
-    const handleClick = () => {
-        dispatch({
-            type: MovieActionTypes.GET,
-            payload: moviesList,
-        });
-    };
+    console.log(favorites);
 
     const getMovies = async () => {
         try {
@@ -61,40 +32,139 @@ function App() {
                 `${API_SITE}/movie/popular?${API_KEY}&language=en-US&page=1`
             );
             const movieData = await response.json();
-            setMoviesList(movieData.results);
+
+            if (response.ok) {
+                dispatch(getMovieReducerSuccess(movieData.results));
+            } else {
+                dispatch(
+                    getMovieReducerError(
+                        "Ocorreu algum erro ao tentar buscar por filmes"
+                    )
+                );
+            }
+
             return movieData;
         } catch (error) {
-            console.error(error);
+            dispatch(getMovieReducerError(error));
+            return error;
         }
+    };
+
+    const handleFavoriteMovie = (movie: IMovie) => {
+        dispatch(addMovieToFavorite(movie));
+    };
+
+    const handleDisplayOnlyFavorites = () => {
+        if (favorites.length > 0) {
+            setIsFavoriteActive(true);
+            dispatch(filterOnlyFavorites());
+        } else {
+            alert(
+                "Por favor, adicione um filme a lista de favoritos através do ícone de favoritar"
+            );
+        }
+    };
+
+    const handleDisplayAllMovies = () => {
+        setIsFavoriteActive(false);
+        getMovies();
+    };
+
+    const handleDeleteMovies = (movieId: number) => {
+        dispatch(deleteMovieFromList(movieId));
     };
 
     return (
         <div className="page-container">
             <h1>Conheça Filmes populares</h1>
-            <button className="get-btn" onClick={handleClick}>
-                Executando o GET
-            </button>
+            <h2>Estes estão lotando as bilheterias</h2>
 
-            {currentMovies ? (
-                <div className="card-container">
-                    {currentMovies.map((movie: Result) => {
-                        return (
-                            <div className="card" key={movie.id}>
-                                <div className="card-header">
-                                    <img
-                                        src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
-                                        alt=""
+            {movies ? (
+                <>
+                    <div className="btn-filter-container">
+                        <button
+                            onClick={handleDisplayAllMovies}
+                            className={isFavoriteActive ? "" : "active"}
+                        >
+                            Mostrar todos
+                        </button>
+                        <button
+                            onClick={handleDisplayOnlyFavorites}
+                            className={isFavoriteActive ? "active" : ""}
+                        >
+                            Filtar por favoritos
+                        </button>
+                    </div>
+
+                    <div className="card-container">
+                        {movies.map((movie: IMovie) => {
+                            return (
+                                <div className="card" key={movie.id}>
+                                    <X
+                                        size={24}
+                                        color="#fef7f196"
+                                        className="delete-icon"
+                                        onClick={() =>
+                                            handleDeleteMovies(movie.id)
+                                        }
+                                    />
+                                    <div className="card-header">
+                                        <img
+                                            src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
+                                            alt=""
+                                        />
+                                    </div>
+
+                                    <span
+                                        data-movie-rate={
+                                            movie.vote_average < 5.5
+                                                ? "bad"
+                                                : movie.vote_average > 5.5 &&
+                                                  movie.vote_average < 8
+                                                ? "medium"
+                                                : "good"
+                                        }
+                                    >
+                                        {movie.vote_average}
+                                    </span>
+                                    <h2>{movie.title}</h2>
+                                    {/* <span>{movie.release_date}</span> */}
+                                    <p>{movie.overview}</p>
+                                    <Heart
+                                        data-id={movie.id}
+                                        className="favorite-icon"
+                                        size={32}
+                                        weight={
+                                            favorites.some(
+                                                (favoriteMovie: IMovie) =>
+                                                    favoriteMovie.id ===
+                                                    movie.id
+                                            )
+                                                ? "fill"
+                                                : "regular"
+                                        }
+                                        color={
+                                            favorites.some(
+                                                (favoriteMovie: IMovie) =>
+                                                    favoriteMovie.id ===
+                                                    movie.id
+                                            )
+                                                ? "red"
+                                                : "#fef7f1"
+                                        }
+                                        alt="favoritar filme"
+                                        onClick={() =>
+                                            handleFavoriteMovie(movie)
+                                        }
                                     />
                                 </div>
-
-                                <h2>{movie.title}</h2>
-                                <span>{movie.release_date}</span>
-                                {/* <button className="rate-btn" onClick={}>Avalie</button> */}
-                            </div>
-                        );
-                    })}
-                </div>
-            ) : null}
+                            );
+                        })}
+                    </div>
+                </>
+            ) : (
+                <h2>{error}</h2>
+            )}
         </div>
     );
 }
